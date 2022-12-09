@@ -13,9 +13,9 @@ config_file = 'config.yml'
 
 
 def load_config(yaml_to_load):
-	with open(yaml_to_load, 'rt') as f:
-		config_file = yaml.load(f, Loader=yaml.FullLoader)
-	return config_file
+    with open(yaml_to_load, 'rt') as f:
+        config_file = yaml.load(f, Loader=yaml.FullLoader)
+    return config_file
 
 
 config_data = load_config(config_file)
