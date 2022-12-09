@@ -2,7 +2,7 @@
 FROM python:alpine
 
 # Maintainer
-LABEL "Maintainer"="David Kurasov (david.kurasov@mail.ru)"
+LABEL "Maintainer"="TG Bot Guru :)"
 
 # Add app code to /code inside container image
 ADD . /app
