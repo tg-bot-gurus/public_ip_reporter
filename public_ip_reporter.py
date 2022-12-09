@@ -44,6 +44,7 @@ def send_msg(msg, tg_token=token, tg_chat_id=chat_id):
     except Exception as e:
         error_msg = f"Error sending alert to telegram: {e}"
         logger(error_msg)
+	raise
 
 
 def get_ip(url=ip_url):
@@ -56,6 +57,7 @@ def get_ip(url=ip_url):
     except Exception as e:
         error_msg = f"Error getting IP address: {e}"
         logger(error_msg)
+	raise
 	
 
 def get_ip_location(url=location_url):
@@ -69,6 +71,7 @@ def get_ip_location(url=location_url):
     except Exception as e:
         error_msg = f"Error getting IP address location: {e}"
         logger(error_msg)
+	raise
 
 
 def main():
