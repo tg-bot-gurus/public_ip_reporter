@@ -1,0 +1,7 @@
+telegram_token: 'token_to_interact_with_telegram_api' # API token assigned to your bot upon creation
+telegram_chat_id: 'id_of_chat_you_initiated' # see example at https://docs.influxdata.com/kapacitor/v1.6/event_handlers/telegram/#get-your-telegram-chat-id
+telegram_api_url: 'https://api.telegram.org/bot'
+log_file_name_with_extension: 'public_ip_log.txt'
+ip_address_url: 'https://api64.ipify.org?format=json'
+ip_address_location_url: 'https://geolocation-db.com/jsonp/'
+country_code: 'RU'
