@@ -41,47 +41,46 @@ def logger(text, file_path=log_file_path):
 def send_msg(msg, tg_token=token, tg_chat_id=chat_id):
     try:
         requests.get(f'{api_url}{tg_token}/sendMessage?chat_id={tg_chat_id}&text={msg}')
-        return
     except Exception as e:
         error_msg = f"Error sending alert to telegram: {e}"
         logger(error_msg)
 
 
 def get_ip(url=ip_url):
-	try:
-		response = requests.get(url).json()
-		if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",response["ip"]):
-			send_msg(f"Invalid IP - {response['ip']} - was obtained from {url}")
-			raise ValueError(f"{response['ip']} is an invalid IP address")
-		return response["ip"]
-	except Exception as e:
-		error_msg = f"Error getting IP address: {e}"
-		logger(error_msg)
+    try:
+        response = requests.get(url).json()
+        if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",response["ip"]):
+            send_msg(f"Invalid IP - {response['ip']} - was obtained from {url}")
+            raise ValueError(f"{response['ip']} is an invalid IP address")
+        return response["ip"]
+    except Exception as e:
+        error_msg = f"Error getting IP address: {e}"
+        logger(error_msg)
 	
 
 def get_ip_location(url=location_url):
-	ip_address = get_ip()
-	full_location_url = f"{url}{ip_address}"
-	try:
-		response = requests.get(full_location_url)
-		interim_result = response.content.decode()
-		result = interim_result.split("(")[1].strip(")")
-		return json.loads(result)
-	except Exception as e:
-		error_msg = f"Error getting IP address location: {e}"
-		logger(error_msg)
+    ip_address = get_ip()
+    full_location_url = f"{url}{ip_address}"
+    try:
+        response = requests.get(full_location_url)
+        interim_result = response.content.decode()
+        result = interim_result.split("(")[1].strip(")")
+        return json.loads(result)
+    except Exception as e:
+        error_msg = f"Error getting IP address location: {e}"
+        logger(error_msg)
 
 
 def main():
-	while True:
-		time.sleep(3)
-		location_info = get_ip_location()
-		ip_v4 = location_info['IPv4']
-		actual_code = location_info['country_code']
-		if actual_code == country_code: continue
-		alert = f"Public IP - {ip_v4} is NOT from {country_code}. Detected country - {actual_code}!!!"
-		send_msg(alert)
+    while True:
+        time.sleep(3)
+        location_info = get_ip_location()
+        ip_v4 = location_info['IPv4']
+        actual_code = location_info['country_code']
+        if actual_code == country_code: continue
+        alert = f"Public IP - {ip_v4} is NOT from {country_code}. Detected country - {actual_code}!!!"
+        send_msg(alert)
 
 
 if __name__ == '__main__':
-	main()
+    main()
