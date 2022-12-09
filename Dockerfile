@@ -4,7 +4,7 @@ FROM python:alpine
 # Maintainer
 LABEL "Maintainer"="TG Bot Guru :)"
 
-# Add app code to /code inside container image
+# Add app code to /app inside container image
 ADD . /app
 
 # Set working directory for subsequent commands
