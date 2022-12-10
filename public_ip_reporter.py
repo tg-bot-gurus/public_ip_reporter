@@ -29,6 +29,7 @@ country_code = config_data['country_code']
 os_type = platform.system()
 slash = '\\' if os_type == 'Windows' else '/'
 log_file_path = f"{current_directory}{slash}{log_file}"
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0'}
 
 
 def logger(text, file_path=log_file_path):
@@ -40,16 +41,16 @@ def logger(text, file_path=log_file_path):
 
 def send_msg(msg, tg_token=token, tg_chat_id=chat_id):
     try:
-        requests.get(f'{api_url}{tg_token}/sendMessage?chat_id={tg_chat_id}&text={msg}')
+        requests.get(f'{api_url}{tg_token}/sendMessage?chat_id={tg_chat_id}&text={msg}',headers=headers)
     except Exception as e:
         error_msg = f"Error sending alert to telegram: {e}"
         logger(error_msg)
-	raise
+        raise
 
 
 def get_ip(url=ip_url):
     try:
-        response = requests.get(url).json()
+        response = requests.get(url, headers=headers).json()
         if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",response["ip"]):
             send_msg(f"Invalid IP - {response['ip']} - was obtained from {url}")
             raise ValueError(f"{response['ip']} is an invalid IP address")
@@ -57,27 +58,37 @@ def get_ip(url=ip_url):
     except Exception as e:
         error_msg = f"Error getting IP address: {e}"
         logger(error_msg)
-	raise
+        send_msg(error_msg)
+        raise
 	
 
 def get_ip_location(url=location_url):
     ip_address = get_ip()
     full_location_url = f"{url}{ip_address}"
     try:
-        response = requests.get(full_location_url)
+        response = requests.get(full_location_url, headers=headers)
         interim_result = response.content.decode()
         result = interim_result.split("(")[1].strip(")")
-        return json.loads(result)
+        try:
+            json_data = json.loads(result)
+        except Exception as e:
+            send_msg(f"Response format is not JSON: error - {e}; response - {result}")
+            return None
+        return json_data
     except Exception as e:
         error_msg = f"Error getting IP address location: {e}"
         logger(error_msg)
-	raise
+        send_msg(error_msg)
+        raise
 
 
 def main():
     while True:
-        time.sleep(3)
+        time.sleep(60)
         location_info = get_ip_location()
+        if location_info is None:
+            time.sleep(60)
+            continue
         ip_v4 = location_info['IPv4']
         actual_code = location_info['country_code']
         if actual_code == country_code: continue
